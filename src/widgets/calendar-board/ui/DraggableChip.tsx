@@ -16,6 +16,7 @@ export function DraggableChip({ task, color }: DraggableChipProps) {
 
   const { setNodeRef, listeners, attributes, isDragging } = useDraggable({
     id: dndId.calendarTask(task.id),
+    data: { variant: 'chip' },
   });
 
   return (

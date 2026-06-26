@@ -33,6 +33,7 @@ export function TaskChip({
       )}
       <button
         type="button"
+        onPointerDown={(e) => e.stopPropagation()}
         onClick={onEdit}
         className="flex-1 truncate text-left font-medium"
         title={task.title}

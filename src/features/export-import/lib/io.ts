@@ -5,8 +5,13 @@ import type {
   UiState,
   ViewMode,
 } from '@/shared/types';
-import { SCHEMA_VERSION } from '@/shared/config/constants';
-import { todayISO } from '@/shared/lib/date';
+import {
+  DEFAULT_CATEGORY_COLOR,
+  FALLBACK_COLOR,
+  SCHEMA_VERSION,
+} from '@/shared/config/constants';
+import { normalizeHexColor } from '@/shared/lib/color';
+import { normalizeISODate, todayISO } from '@/shared/lib/date';
 
 function isObject(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null;
@@ -20,13 +25,24 @@ function asBool(v: unknown): boolean {
   return v === true;
 }
 
+function asTaskColor(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  return normalizeHexColor(v, FALLBACK_COLOR);
+}
+
+function asNullableISODate(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  const normalized = normalizeISODate(v, '');
+  return normalized || null;
+}
+
 function normalizeCategory(raw: unknown): Category | null {
   if (!isObject(raw)) return null;
   if (typeof raw.id !== 'string') return null;
   return {
     id: raw.id,
     name: asString(raw.name, 'Без названия'),
-    color: asString(raw.color, '#6366f1'),
+    color: normalizeHexColor(raw.color, DEFAULT_CATEGORY_COLOR),
     collapsed: asBool(raw.collapsed),
   };
 }
@@ -38,13 +54,12 @@ function normalizeTask(raw: unknown): Task | null {
     id: raw.id,
     title: asString(raw.title, 'Без названия'),
     categoryId: typeof raw.categoryId === 'string' ? raw.categoryId : null,
-    color: typeof raw.color === 'string' ? raw.color : null,
+    color: asTaskColor(raw.color),
     emoji: typeof raw.emoji === 'string' ? raw.emoji : null,
     important: asBool(raw.important),
     completed: asBool(raw.completed),
     completedAt: typeof raw.completedAt === 'number' ? raw.completedAt : null,
-    scheduledDate:
-      typeof raw.scheduledDate === 'string' ? raw.scheduledDate : null,
+    scheduledDate: asNullableISODate(raw.scheduledDate),
     createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : Date.now(),
   };
 }
@@ -54,7 +69,7 @@ function normalizeUi(raw: unknown): UiState {
   const viewMode: ViewMode = obj.viewMode === 'month' ? 'month' : 'week';
   return {
     viewMode,
-    anchorDate: asString(obj.anchorDate, todayISO()),
+    anchorDate: normalizeISODate(obj.anchorDate, todayISO()),
     importantOnly: asBool(obj.importantOnly),
   };
 }

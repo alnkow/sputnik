@@ -22,7 +22,7 @@ export function TaskSquare({ task, color, onEdit }: TaskSquareProps) {
         type="button"
         onClick={onEdit}
         aria-label={task.title}
-        className="flex h-5 w-5 items-center justify-center rounded-[4px] text-[10px] leading-none shadow-sm ring-1 ring-black/5 transition-transform"
+        className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] text-[10px] leading-none shadow-sm ring-1 ring-black/5 transition-transform"
         style={{ backgroundColor: color }}
       >
         {task.emoji ?? (task.important ? '🔥' : '')}

@@ -48,7 +48,7 @@ import {
 } from '@/entities/task/model/selectors';
 
 type ActiveDrag =
-  | { kind: 'task'; task: Task; color: string }
+  | { kind: 'task'; task: Task; color: string; variant: 'chip' | 'square' }
   | { kind: 'category'; category: Category };
 
 interface BoardDndProviderProps {
@@ -83,7 +83,11 @@ export function BoardDndProvider({ children }: BoardDndProviderProps) {
           task,
           buildCategoryIndex(state.categories),
         );
-        setActive({ kind: 'task', task, color });
+        const variant =
+          event.active.data.current?.variant === 'square'
+            ? 'square'
+            : 'chip';
+        setActive({ kind: 'task', task, color, variant });
       }
     }
   };
@@ -127,7 +131,18 @@ export function BoardDndProvider({ children }: BoardDndProviderProps) {
     >
       {children}
       <DragOverlay dropAnimation={null}>
-        {active?.kind === 'task' && (
+        {active?.kind === 'task' && active.variant === 'square' && (
+          <div
+            className="flex h-5 w-5 items-center justify-center rounded-[4px] text-[10px] leading-none shadow-lg ring-1 ring-black/5"
+            style={{
+              backgroundColor: active.color,
+              color: getReadableTextColor(active.color),
+            }}
+          >
+            {active.task.emoji ?? (active.task.important ? '🔥' : '')}
+          </div>
+        )}
+        {active?.kind === 'task' && active.variant === 'chip' && (
           <div
             className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium shadow-lg"
             style={{

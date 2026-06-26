@@ -198,9 +198,9 @@ export const useAppStore = create<AppStore>()(
             const targetCategory =
               tasks.find((t) => t.id === over.id)?.categoryId ?? null;
             moving.categoryId = targetCategory;
-            tasks.splice(fromIndex, 1);
             const overIndex = tasks.findIndex((t) => t.id === over.id);
             if (overIndex === -1) return {};
+            tasks.splice(fromIndex, 1);
             tasks.splice(overIndex, 0, moving);
           } else {
             moving.categoryId = over.id;

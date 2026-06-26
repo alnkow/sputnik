@@ -15,6 +15,8 @@ const MONTHS_GENITIVE = [
   'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
 ] as const;
 
+const ISO_DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
 const pad = (n: number): string => String(n).padStart(2, '0');
 
 /** Преобразует Date в строку 'YYYY-MM-DD' (локальное время). */
@@ -26,6 +28,27 @@ export function toISO(date: Date): string {
 export function fromISO(iso: string): Date {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, m - 1, d);
+}
+
+/** Проверяет, что строка является реальной датой в формате 'YYYY-MM-DD'. */
+export function isValidISODate(iso: string): boolean {
+  const match = ISO_DATE_RE.exec(iso);
+  if (!match) return false;
+  const [, yRaw, mRaw, dRaw] = match;
+  const y = Number(yRaw);
+  const m = Number(mRaw);
+  const d = Number(dRaw);
+  const parsed = new Date(y, m - 1, d);
+  return (
+    parsed.getFullYear() === y &&
+    parsed.getMonth() === m - 1 &&
+    parsed.getDate() === d
+  );
+}
+
+/** Возвращает дату, если она валидна, иначе fallback. */
+export function normalizeISODate(value: unknown, fallback: string): string {
+  return typeof value === 'string' && isValidISODate(value) ? value : fallback;
 }
 
 /** Сегодняшняя дата в формате ISO. */

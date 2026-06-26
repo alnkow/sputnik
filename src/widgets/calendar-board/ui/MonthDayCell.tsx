@@ -1,4 +1,4 @@
-import { useDroppable } from '@dnd-kit/core';
+import { useDraggable, useDroppable } from '@dnd-kit/core';
 import type { Task } from '@/shared/types';
 import { cn } from '@/shared/lib/cn';
 import { dndId } from '@/shared/lib/dnd';
@@ -11,6 +11,35 @@ interface MonthDayCellProps {
   tasks: Task[];
   inMonth: boolean;
   colorOf: (task: Task) => string;
+}
+
+function DraggableTaskSquare({
+  task,
+  color,
+  onEdit,
+}: {
+  task: Task;
+  color: string;
+  onEdit: () => void;
+}) {
+  const { setNodeRef, listeners, attributes, isDragging } = useDraggable({
+    id: dndId.calendarTask(task.id),
+    data: { variant: 'square' },
+  });
+
+  return (
+    <span
+      ref={setNodeRef}
+      className={cn(
+        'inline-flex h-5 w-5 shrink-0 touch-none items-center justify-center',
+        isDragging && 'opacity-50',
+      )}
+      {...listeners}
+      {...attributes}
+    >
+      <TaskSquare task={task} color={color} onEdit={onEdit} />
+    </span>
+  );
 }
 
 export function MonthDayCell({
@@ -50,7 +79,7 @@ export function MonthDayCell({
       </div>
       <div className="thin-scrollbar flex flex-wrap content-start gap-1 overflow-y-auto">
         {tasks.map((task) => (
-          <TaskSquare
+          <DraggableTaskSquare
             key={task.id}
             task={task}
             color={colorOf(task)}

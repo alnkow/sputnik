@@ -36,7 +36,7 @@ export function TaskCard({
   return (
     <div
       className={cn(
-        'group flex items-center gap-1.5 rounded-lg border border-slate-100 bg-white px-1.5 py-1.5 shadow-sm transition-colors hover:border-slate-200',
+        'group flex items-center gap-1.5 rounded-lg border border-slate-100 bg-white px-1.5 py-1.5 shadow-sm transition-colors hover:border-slate-200 focus-within:border-slate-200',
         dragging && 'opacity-50',
       )}
     >
@@ -78,7 +78,7 @@ export function TaskCard({
           <CheckCircleIcon className="h-4 w-4" />
         </IconButton>
         <IconButton
-          className="opacity-0 group-hover:opacity-100"
+          className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
           onClick={onEdit}
           aria-label="Редактировать"
           title="Редактировать"
@@ -87,7 +87,7 @@ export function TaskCard({
         </IconButton>
         <IconButton
           tone="danger"
-          className="opacity-0 group-hover:opacity-100"
+          className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
           onClick={onDelete}
           aria-label="Удалить"
           title="Удалить"
