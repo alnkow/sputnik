@@ -20,7 +20,7 @@ export function WeekDayColumn({ iso, tasks, colorOf }: WeekDayColumnProps) {
       <div
         className={cn(
           'flex items-center justify-between border-b border-slate-100 px-3 py-2',
-          today && 'bg-indigo-50',
+          today && 'bg-accent-50',
         )}
       >
         <span
@@ -34,7 +34,7 @@ export function WeekDayColumn({ iso, tasks, colorOf }: WeekDayColumnProps) {
         <span
           className={cn(
             'flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold',
-            today ? 'bg-indigo-600 text-white' : 'text-slate-700',
+            today ? 'bg-accent-600 text-white' : 'text-slate-700',
           )}
         >
           {dayNumber(iso)}
@@ -44,7 +44,7 @@ export function WeekDayColumn({ iso, tasks, colorOf }: WeekDayColumnProps) {
         ref={setNodeRef}
         className={cn(
           'thin-scrollbar flex-1 space-y-1.5 overflow-y-auto p-2 transition-colors',
-          isOver && 'bg-indigo-50/70',
+          isOver && 'bg-accent-50/70',
         )}
       >
         {tasks.map((task) => (

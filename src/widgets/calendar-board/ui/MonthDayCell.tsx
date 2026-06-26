@@ -31,7 +31,7 @@ export function MonthDayCell({
         inMonth
           ? 'border-slate-200 bg-white'
           : 'border-slate-100 bg-slate-50/60',
-        isOver && 'ring-2 ring-indigo-300',
+        isOver && 'ring-2 ring-accent-300',
       )}
     >
       <div className="mb-1 flex justify-end">
@@ -39,7 +39,7 @@ export function MonthDayCell({
           className={cn(
             'flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs font-medium',
             today
-              ? 'bg-indigo-600 text-white'
+              ? 'bg-accent-600 text-white'
               : inMonth
                 ? 'text-slate-600'
                 : 'text-slate-400',

@@ -1,5 +1,17 @@
 @import 'tailwindcss';
 
+@theme {
+  /* Пастельный лавандовый акцент интерфейса (замена indigo). */
+  --color-accent-50: #f5f3ff;
+  --color-accent-100: #ece9fe;
+  --color-accent-200: #ddd6fe;
+  --color-accent-300: #c9bffd;
+  --color-accent-400: #b4a7fc;
+  --color-accent-600: #6d5bd0;
+  --color-accent-700: #5c4bbd;
+  --color-accent-800: #4d3fa0;
+}
+
 :root {
   color-scheme: light;
 }

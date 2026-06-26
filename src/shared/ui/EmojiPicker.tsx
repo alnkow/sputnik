@@ -14,7 +14,7 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
         onClick={() => onChange(null)}
         className={cn(
           'flex h-8 w-8 items-center justify-center rounded-md text-xs text-slate-500',
-          'hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400',
+          'hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400',
           value === null && 'bg-slate-200 ring-1 ring-slate-300',
         )}
         title="Без эмодзи"
@@ -28,8 +28,8 @@ export function EmojiPicker({ value, onChange }: EmojiPickerProps) {
           onClick={() => onChange(emoji)}
           className={cn(
             'flex h-8 w-8 items-center justify-center rounded-md text-lg',
-            'hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400',
-            value === emoji && 'bg-indigo-100 ring-1 ring-indigo-300',
+            'hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400',
+            value === emoji && 'bg-accent-100 ring-1 ring-accent-300',
           )}
         >
           {emoji}

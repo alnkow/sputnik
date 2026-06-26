@@ -61,7 +61,7 @@ export function SortableCategorySection({
         ref={setDropRef}
         className={cn(
           'rounded-xl border border-transparent transition-colors',
-          isOver && 'border-indigo-200 bg-indigo-50/60',
+          isOver && 'border-accent-200 bg-accent-50/60',
         )}
       >
         <CategoryHeader

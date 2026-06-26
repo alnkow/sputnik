@@ -1,5 +1,6 @@
 import type { Task } from '@/shared/types';
 import { cn } from '@/shared/lib/cn';
+import { getReadableTextColor } from '@/shared/lib/color';
 import { CloseIcon, FlameIcon } from '@/shared/ui/icons';
 
 interface TaskChipProps {
@@ -21,10 +22,10 @@ export function TaskChip({
   return (
     <div
       className={cn(
-        'group flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-white shadow-sm',
+        'group flex items-center gap-1 rounded-md px-1.5 py-1 text-xs shadow-sm',
         dragging && 'opacity-50',
       )}
-      style={{ backgroundColor: color }}
+      style={{ backgroundColor: color, color: getReadableTextColor(color) }}
     >
       {task.emoji && <span className="leading-none">{task.emoji}</span>}
       {task.important && (

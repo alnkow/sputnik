@@ -206,7 +206,7 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
                 onChange={(e) =>
                   patch({ categoryId: e.target.value || null })
                 }
-                className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 shadow-sm focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800 shadow-sm focus:border-accent-400 focus:outline-none focus:ring-2 focus:ring-accent-100"
               >
                 <option value="">Без категории</option>
                 {categories.map((c) => (

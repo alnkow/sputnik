@@ -28,7 +28,7 @@ export function UncategorizedSection({
       ref={setNodeRef}
       className={cn(
         'rounded-xl border border-transparent transition-colors',
-        isOver && 'border-indigo-200 bg-indigo-50/60',
+        isOver && 'border-accent-200 bg-accent-50/60',
       )}
     >
       <div className="flex items-center gap-2 px-2 py-1">

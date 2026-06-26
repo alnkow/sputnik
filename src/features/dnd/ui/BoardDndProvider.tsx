@@ -16,6 +16,7 @@ import type {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import type { Category, Task } from '@/shared/types';
+import { getReadableTextColor } from '@/shared/lib/color';
 import type { DragId } from '@/shared/lib/dnd';
 import { parseDndId } from '@/shared/lib/dnd';
 
@@ -128,8 +129,11 @@ export function BoardDndProvider({ children }: BoardDndProviderProps) {
       <DragOverlay dropAnimation={null}>
         {active?.kind === 'task' && (
           <div
-            className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium text-white shadow-lg"
-            style={{ backgroundColor: active.color }}
+            className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium shadow-lg"
+            style={{
+              backgroundColor: active.color,
+              color: getReadableTextColor(active.color),
+            }}
           >
             {active.task.emoji && <span>{active.task.emoji}</span>}
             <span className="max-w-[220px] truncate">{active.task.title}</span>

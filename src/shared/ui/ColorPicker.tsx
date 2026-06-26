@@ -22,7 +22,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
             onClick={() => onChange(color)}
             className={cn(
               'h-7 w-7 rounded-full transition-transform hover:scale-110',
-              'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-indigo-400',
+              'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-accent-400',
               value.toLowerCase() === color.toLowerCase() &&
                 'ring-2 ring-slate-800 ring-offset-2',
             )}
@@ -34,7 +34,7 @@ export function ColorPicker({ value, onChange }: ColorPickerProps) {
           onClick={() => setCustomOpen((v) => !v)}
           className={cn(
             'flex h-7 items-center rounded-full border border-slate-200 px-3 text-xs font-medium text-slate-600',
-            'hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400',
+            'hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400',
             customOpen && 'bg-slate-100',
           )}
         >

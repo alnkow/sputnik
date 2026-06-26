@@ -29,7 +29,7 @@ export function IconButton({
       type={type}
       className={cn(
         'inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors',
-        'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400',
         'disabled:cursor-not-allowed disabled:opacity-40',
         toneClasses[tone],
         active && 'text-amber-500',
