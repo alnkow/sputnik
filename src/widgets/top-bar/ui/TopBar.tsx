@@ -5,6 +5,7 @@ import { useAppStore } from '@/shared/store/useAppStore';
 import { useUiStore } from '@/shared/store/useUiStore';
 import { Button } from '@/shared/ui/Button';
 import { IconButton } from '@/shared/ui/IconButton';
+import { Logo } from '@/shared/ui/Logo';
 import {
   CheckCircleIcon,
   ChevronLeftIcon,
@@ -36,7 +37,12 @@ export function TopBar() {
 
   return (
     <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-slate-200 bg-white px-4 py-2.5">
-      <h1 className="text-base font-bold text-slate-800">📅 Планировщик</h1>
+      <h1 className="flex items-center gap-2">
+        <Logo className="h-7 w-7 text-red-700" />
+        <span className="font-soviet text-2xl tracking-wide text-red-700">
+          Sputnik
+        </span>
+      </h1>
 
       <div className="inline-flex rounded-lg bg-slate-100 p-0.5">
         {modes.map(({ value, label, icon: Icon }) => (

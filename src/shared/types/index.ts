@@ -20,6 +20,8 @@ export interface Task {
   color: string | null;
   /** эмодзи задачи или null */
   emoji: string | null;
+  /** доп. описание задачи или null */
+  description: string | null;
   important: boolean;
   completed: boolean;
   completedAt: number | null;

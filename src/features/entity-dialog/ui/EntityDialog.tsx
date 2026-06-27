@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import type { ID } from '@/shared/types';
+import type { ID, Task } from '@/shared/types';
 import {
   DEFAULT_CATEGORY_COLOR,
   PALETTE,
 } from '@/shared/config/constants';
+import { buildCategoryIndex, resolveTaskColor } from '@/entities/task/model/selectors';
 import { cn } from '@/shared/lib/cn';
 import { useAppStore } from '@/shared/store/useAppStore';
 import { useUiStore } from '@/shared/store/useUiStore';
@@ -15,9 +16,10 @@ import {
   Field,
   Input,
   Modal,
+  Textarea,
   Toggle,
 } from '@/shared/ui';
-import { CheckIcon } from '@/shared/ui/icons';
+import { CheckIcon, FlameIcon, PencilIcon } from '@/shared/ui/icons';
 
 type OpenDialog = Exclude<DialogState, { kind: 'closed' }>;
 
@@ -26,6 +28,7 @@ type EntityType = 'task' | 'category';
 interface FormState {
   type: EntityType;
   title: string;
+  description: string;
   categoryId: ID | null;
   inheritColor: boolean;
   color: string;
@@ -44,6 +47,7 @@ function getInitialState(dialog: OpenDialog): FormState {
       return {
         type: 'task',
         title: '',
+        description: '',
         categoryId: dialog.presetCategoryId,
         inheritColor: true,
         color: categoryColor(dialog.presetCategoryId),
@@ -53,6 +57,7 @@ function getInitialState(dialog: OpenDialog): FormState {
       return {
         type: 'category',
         title: '',
+        description: '',
         categoryId: null,
         inheritColor: false,
         color: DEFAULT_CATEGORY_COLOR,
@@ -63,6 +68,7 @@ function getInitialState(dialog: OpenDialog): FormState {
       return {
         type: 'task',
         title: task?.title ?? '',
+        description: task?.description ?? '',
         categoryId: task?.categoryId ?? null,
         inheritColor: task ? task.color === null : true,
         color: task?.color ?? categoryColor(task?.categoryId ?? null),
@@ -76,6 +82,7 @@ function getInitialState(dialog: OpenDialog): FormState {
       return {
         type: 'category',
         title: category?.name ?? '',
+        description: '',
         categoryId: null,
         inheritColor: false,
         color: category?.color ?? DEFAULT_CATEGORY_COLOR,
@@ -92,10 +99,54 @@ const titleByDialog: Record<OpenDialog['kind'], string> = {
   'edit-category': 'Редактировать категорию',
 };
 
+/** Презентационный просмотр задачи в диалоге — до перехода в редактирование. */
+function TaskPreview({
+  task,
+  color,
+  categoryName,
+}: {
+  task: Task;
+  color: string;
+  categoryName: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-start gap-2.5">
+        <span
+          className="mt-1.5 h-3 w-3 shrink-0 rounded-full"
+          style={{ backgroundColor: color }}
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 text-base font-semibold text-slate-800">
+            {task.emoji && <span>{task.emoji}</span>}
+            <span className="break-words">{task.title}</span>
+            {task.important && (
+              <FlameIcon
+                className="h-4 w-4 shrink-0 text-amber-500"
+                fill="currentColor"
+              />
+            )}
+          </div>
+          <p className="mt-0.5 text-sm text-slate-500">{categoryName}</p>
+        </div>
+      </div>
+      {task.description && (
+        <p className="whitespace-pre-wrap rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-600">
+          {task.description}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function DialogForm({ dialog }: { dialog: OpenDialog }) {
   const categories = useAppStore((s) => s.categories);
+  const tasks = useAppStore((s) => s.tasks);
   const closeDialog = useUiStore((s) => s.closeDialog);
   const [form, setForm] = useState<FormState>(() => getInitialState(dialog));
+  const [mode, setMode] = useState<'view' | 'edit'>(
+    dialog.kind === 'edit-task' ? 'view' : 'edit',
+  );
 
   const isCreate =
     dialog.kind === 'create-task' || dialog.kind === 'create-category';
@@ -122,6 +173,7 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
         categoryId: form.categoryId,
         color: form.inheritColor ? null : form.color,
         emoji: form.emoji,
+        description: form.description.trim() || null,
       };
       if (dialog.kind === 'edit-task') {
         store.updateTask(dialog.id, payload);
@@ -138,6 +190,48 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
     closeDialog();
   };
 
+  const handleCancel = () => {
+    if (dialog.kind === 'edit-task' && mode === 'edit') {
+      setForm(getInitialState(dialog));
+      setMode('view');
+    } else {
+      closeDialog();
+    }
+  };
+
+  if (dialog.kind === 'edit-task' && mode === 'view') {
+    const task = tasks.find((t) => t.id === dialog.id);
+    if (!task) return null;
+    const color = resolveTaskColor(task, buildCategoryIndex(categories));
+    const categoryName =
+      categories.find((c) => c.id === task.categoryId)?.name ?? 'Без категории';
+
+    return (
+      <Modal
+        open
+        onClose={closeDialog}
+        title="Задача"
+        footer={
+          <>
+            <Button variant="success" className="mr-auto" onClick={handleComplete}>
+              <CheckIcon className="h-4 w-4" />
+              Завершить
+            </Button>
+            <Button variant="primary" onClick={() => setMode('edit')}>
+              <PencilIcon className="h-4 w-4" />
+              Редактировать
+            </Button>
+            <Button variant="ghost" onClick={closeDialog}>
+              Закрыть
+            </Button>
+          </>
+        }
+      >
+        <TaskPreview task={task} color={color} categoryName={categoryName} />
+      </Modal>
+    );
+  }
+
   return (
     <Modal
       open
@@ -151,7 +245,7 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
               Завершить
             </Button>
           )}
-          <Button variant="ghost" onClick={closeDialog}>
+          <Button variant="ghost" onClick={handleCancel}>
             Отмена
           </Button>
           <Button variant="primary" onClick={handleSubmit} disabled={!canSubmit}>
@@ -200,6 +294,14 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
 
         {form.type === 'task' && (
           <>
+            <Field label="Описание">
+              <Textarea
+                value={form.description}
+                onChange={(e) => patch({ description: e.target.value })}
+                placeholder="Дополнительные детали (необязательно)"
+              />
+            </Field>
+
             <Field label="Категория">
               <select
                 value={form.categoryId ?? ''}
@@ -256,7 +358,6 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
   );
 }
 
-/** Диалог создания и редактирования задач и категорий. */
 export function EntityDialog() {
   const dialog = useUiStore((s) => s.dialog);
   if (dialog.kind === 'closed') return null;

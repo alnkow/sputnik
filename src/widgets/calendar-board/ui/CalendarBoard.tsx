@@ -9,6 +9,7 @@ import {
   WEEKDAYS_SHORT,
   getMonthGrid,
   getWeekDays,
+  isPast,
   isSameMonth,
 } from '@/shared/lib/date';
 import { WeekDayColumn } from './WeekDayColumn';
@@ -43,7 +44,14 @@ export function CalendarBoard() {
   if (viewMode === 'week') {
     const days = getWeekDays(anchorDate);
     return (
-      <div className="grid h-full grid-cols-7 gap-2 p-3">
+      <div
+        className="grid h-full gap-2 p-3"
+        style={{
+          gridTemplateColumns: days
+            .map((iso) => (isPast(iso) ? '2fr' : '3fr'))
+            .join(' '),
+        }}
+      >
         {days.map((iso) => (
           <WeekDayColumn
             key={iso}

@@ -2,7 +2,13 @@ import { useDroppable } from '@dnd-kit/core';
 import type { Task } from '@/shared/types';
 import { cn } from '@/shared/lib/cn';
 import { dndId } from '@/shared/lib/dnd';
-import { dayNumber, isToday, isWeekend, weekdayShort } from '@/shared/lib/date';
+import {
+  dayNumber,
+  isPast,
+  isToday,
+  isWeekend,
+  weekdayShort,
+} from '@/shared/lib/date';
 import { DraggableChip } from './DraggableChip';
 
 interface WeekDayColumnProps {
@@ -50,7 +56,7 @@ export function WeekDayColumn({ iso, tasks, colorOf }: WeekDayColumnProps) {
         {tasks.map((task) => (
           <DraggableChip key={task.id} task={task} color={colorOf(task)} />
         ))}
-        {tasks.length === 0 && (
+        {tasks.length === 0 && !isPast(iso) && (
           <div className="flex h-full min-h-16 items-center justify-center text-center text-xs text-slate-300">
             Перетащите задачу сюда
           </div>

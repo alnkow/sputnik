@@ -36,10 +36,13 @@ interface AppActions {
     categoryId: ID | null;
     color: string | null;
     emoji: string | null;
+    description: string | null;
   }) => ID;
   updateTask: (
     id: ID,
-    patch: Partial<Pick<Task, 'title' | 'categoryId' | 'color' | 'emoji'>>,
+    patch: Partial<
+      Pick<Task, 'title' | 'categoryId' | 'color' | 'emoji' | 'description'>
+    >,
   ) => void;
   deleteTask: (id: ID) => void;
   toggleImportant: (id: ID) => void;
@@ -127,13 +130,14 @@ export const useAppStore = create<AppStore>()(
         }),
 
       // --- задачи ---
-      addTask: ({ title, categoryId, color, emoji }) => {
+      addTask: ({ title, categoryId, color, emoji, description }) => {
         const task: Task = {
           id: createId(),
           title: title.trim(),
           categoryId,
           color,
           emoji,
+          description,
           important: false,
           completed: false,
           completedAt: null,

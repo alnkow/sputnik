@@ -56,6 +56,7 @@ function normalizeTask(raw: unknown): Task | null {
     categoryId: typeof raw.categoryId === 'string' ? raw.categoryId : null,
     color: asTaskColor(raw.color),
     emoji: typeof raw.emoji === 'string' ? raw.emoji : null,
+    description: typeof raw.description === 'string' ? raw.description : null,
     important: asBool(raw.important),
     completed: asBool(raw.completed),
     completedAt: typeof raw.completedAt === 'number' ? raw.completedAt : null,

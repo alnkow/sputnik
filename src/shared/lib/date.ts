@@ -110,6 +110,10 @@ export function isToday(iso: string): boolean {
   return iso === todayISO();
 }
 
+export function isPast(iso: string): boolean {
+  return iso < todayISO();
+}
+
 export function isSameMonth(iso: string, anchorISO: string): boolean {
   return iso.slice(0, 7) === anchorISO.slice(0, 7);
 }
