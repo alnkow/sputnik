@@ -13,7 +13,7 @@
 
 ## Доменная модель
 - `Category { id, name, color, collapsed }` — порядок = порядок в массиве.
-- `Task { id, title, categoryId|null, color|null, emoji|null, important, completed, completedAt, scheduledDate|null, createdAt }`.
+- `Task { id, title, categoryId|null, color|null, emoji|null, description|null, important, completed, completedAt, scheduledDate|null, createdAt }`.
 - `categoryId: null` → «Без категории». `color: null` → наследует цвет категории.
 - `scheduledDate` ('YYYY-MM-DD' | null) — одна задача на один день.
 
@@ -28,6 +28,7 @@
 - `npm run dev` — дев-сервер.
 - `npm run build` — типчек + прод-сборка.
 - `npm run preview` — предпросмотр сборки.
+- `npm test` — тесты (Jest + React Testing Library).
 
 ## Конвенции
 - Самодокументируемый код, SOLID/DRY/KISS, без преждевременного усложнения.
