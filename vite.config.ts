@@ -5,5 +5,8 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Относительные пути: сборка работает из любой подпапки,
+  // например на GitHub Pages по адресу https://<user>.github.io/sputnik/.
+  base: './',
   plugins: [react(), tailwindcss(), tsconfigPaths()],
 });

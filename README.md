@@ -35,8 +35,8 @@ There is no server, no account and no sign-up. Your data lives in your browser, 
 
 - **Everything is stored locally**, in your browser's `localStorage` under the key `task-manager`.
 - **Nothing is sent anywhere.** The app has no backend, no analytics, no tracking and no accounts. Your tasks, payments and events never leave your computer unless you export them yourself.
+- **No third-party requests at all.** Fonts and icons are bundled with the app, so it doesn't contact any CDN or font service, and it works offline once loaded.
 - **Exports are ordinary files on your disk.** Where they go, and who you share them with, is up to you.
-- **One external request:** the decorative "Sputnik" logo font (*Yesteryear*) is loaded from Google Fonts when the page opens. That request contains **none of your data**, but Google does see that the font was requested. Without an internet connection the app still works and the logo falls back to a system font.
 
 Because the data lives in the browser, keep in mind:
 
@@ -78,6 +78,16 @@ npm run preview   # serve the built version locally (http://localhost:4173)
 ```
 
 The `dist/` folder is a plain static website. You can put it on any static host (GitHub Pages, Netlify, your own server, etc.). Even when hosted online, **each visitor's data stays in their own browser**. The host never receives it.
+
+### Deploy to GitHub Pages
+
+The repository includes a workflow (`.github/workflows/deploy.yml`) that tests, builds and publishes the app on every push to `master`.
+
+1. Push the repository to GitHub.
+2. Open **Settings → Pages** and set **Source** to **GitHub Actions**.
+3. Push to `master` or run the workflow manually from the **Actions** tab.
+
+The app will be available at `https://<your-username>.github.io/<repository-name>/`. Asset paths are relative (`base: './'` in `vite.config.ts`), so any repository name works.
 
 ---
 
@@ -174,7 +184,7 @@ Open the **⚙ gear menu** in the top-right corner.
 
 ### Export — «Экспорт»
 
-- Downloads **all your data** as a single JSON file, named like `task-manager-2026-09-24.json`. The file includes categories, tasks (active and completed), payments, events and view settings.
+- Downloads **all your data** as a single JSON file, named like `sputnik-2026-09-25.json`. The file includes categories, tasks (active and completed), payments, events and view settings.
 - The file goes to your browser's **downloads folder**, usually `~/Downloads`. You can change this in the browser's settings.
 - It is a plain, human-readable text file. **It is not encrypted**, so keep it somewhere safe if your data is sensitive.
 

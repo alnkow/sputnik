@@ -16,7 +16,7 @@ import { buildExport, downloadFile, parseImport } from '../lib/io';
 function exportJson() {
   const snapshot = buildExport(useAppStore.getState());
   downloadFile(
-    `task-manager-${todayISO()}.json`,
+    `sputnik-${todayISO()}.json`,
     JSON.stringify(snapshot, null, 2),
   );
 }
