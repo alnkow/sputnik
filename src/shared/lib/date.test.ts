@@ -1,4 +1,5 @@
 import {
+  isMonthlyDayOn,
   addDays,
   formatWeekRange,
   getMonthGrid,
@@ -130,5 +131,24 @@ describe('formatWeekRange', () => {
   it('форматирует диапазон на стыке месяцев', () => {
     // неделя 29 июня — 5 июля 2026
     expect(formatWeekRange('2026-07-01')).toBe('29 июня – 5 июля');
+  });
+});
+
+describe('isMonthlyDayOn', () => {
+  it('совпадает с обычным числом месяца', () => {
+    expect(isMonthlyDayOn(15, '2026-03-15')).toBe(true);
+    expect(isMonthlyDayOn(15, '2026-03-16')).toBe(false);
+  });
+
+  it('переносит число, которого нет в месяце, на последний день', () => {
+    expect(isMonthlyDayOn(30, '2026-02-28')).toBe(true);
+    expect(isMonthlyDayOn(31, '2028-02-29')).toBe(true);
+    expect(isMonthlyDayOn(31, '2026-04-30')).toBe(true);
+    expect(isMonthlyDayOn(31, '2026-04-29')).toBe(false);
+  });
+
+  it('в длинном месяце не дублирует на последний день', () => {
+    expect(isMonthlyDayOn(30, '2026-03-31')).toBe(false);
+    expect(isMonthlyDayOn(30, '2026-03-30')).toBe(true);
   });
 });

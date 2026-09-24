@@ -1,14 +1,17 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core';
-import type { Task } from '@/shared/types';
+import type { Payment, Task } from '@/shared/types';
 import { cn } from '@/shared/lib/cn';
 import { dndId } from '@/shared/lib/dnd';
 import { dayNumber, isToday } from '@/shared/lib/date';
 import { useUiStore } from '@/shared/store/useUiStore';
 import { TaskSquare } from '@/entities/task/ui/TaskSquare';
+import { isPaidInMonthOf } from '@/entities/payment/model/selectors';
+import { PaymentSquare } from '@/entities/payment/ui/PaymentSquare';
 
 interface MonthDayCellProps {
   iso: string;
   tasks: Task[];
+  payments: Payment[];
   inMonth: boolean;
   colorOf: (task: Task) => string;
 }
@@ -45,10 +48,12 @@ function DraggableTaskSquare({
 export function MonthDayCell({
   iso,
   tasks,
+  payments,
   inMonth,
   colorOf,
 }: MonthDayCellProps) {
   const openEditTask = useUiStore((s) => s.openEditTask);
+  const openPaymentPreview = useUiStore((s) => s.openPaymentPreview);
   const { setNodeRef, isOver } = useDroppable({ id: dndId.day(iso) });
   const today = isToday(iso);
 
@@ -78,6 +83,14 @@ export function MonthDayCell({
         </span>
       </div>
       <div className="thin-scrollbar flex flex-wrap content-start gap-1 overflow-y-auto">
+        {payments.map((payment) => (
+          <PaymentSquare
+            key={payment.id}
+            payment={payment}
+            paid={isPaidInMonthOf(payment, iso)}
+            onOpen={() => openPaymentPreview(payment.id, iso)}
+          />
+        ))}
         {tasks.map((task) => (
           <DraggableTaskSquare
             key={task.id}

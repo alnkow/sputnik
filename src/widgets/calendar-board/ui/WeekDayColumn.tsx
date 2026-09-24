@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
-import type { Task } from '@/shared/types';
+import type { Payment, Task } from '@/shared/types';
 import { cn } from '@/shared/lib/cn';
 import { dndId } from '@/shared/lib/dnd';
 import {
@@ -9,15 +9,25 @@ import {
   isWeekend,
   weekdayShort,
 } from '@/shared/lib/date';
+import { useUiStore } from '@/shared/store/useUiStore';
+import { isPaidInMonthOf } from '@/entities/payment/model/selectors';
+import { PaymentChip } from '@/entities/payment/ui/PaymentChip';
 import { DraggableChip } from './DraggableChip';
 
 interface WeekDayColumnProps {
   iso: string;
   tasks: Task[];
+  payments: Payment[];
   colorOf: (task: Task) => string;
 }
 
-export function WeekDayColumn({ iso, tasks, colorOf }: WeekDayColumnProps) {
+export function WeekDayColumn({
+  iso,
+  tasks,
+  payments,
+  colorOf,
+}: WeekDayColumnProps) {
+  const openPaymentPreview = useUiStore((s) => s.openPaymentPreview);
   const { setNodeRef, isOver } = useDroppable({ id: dndId.day(iso) });
   const today = isToday(iso);
 
@@ -53,10 +63,18 @@ export function WeekDayColumn({ iso, tasks, colorOf }: WeekDayColumnProps) {
           isOver && 'bg-accent-50/70',
         )}
       >
+        {payments.map((payment) => (
+          <PaymentChip
+            key={payment.id}
+            payment={payment}
+            paid={isPaidInMonthOf(payment, iso)}
+            onOpen={() => openPaymentPreview(payment.id, iso)}
+          />
+        ))}
         {tasks.map((task) => (
           <DraggableChip key={task.id} task={task} color={colorOf(task)} />
         ))}
-        {tasks.length === 0 && !isPast(iso) && (
+        {tasks.length === 0 && payments.length === 0 && !isPast(iso) && (
           <div className="flex h-full min-h-16 items-center justify-center text-center text-xs text-slate-300">
             Перетащите задачу сюда
           </div>

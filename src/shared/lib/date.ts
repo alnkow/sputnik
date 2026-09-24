@@ -106,6 +106,21 @@ export function getMonthGrid(anchorISO: string): string[][] {
   return weeks;
 }
 
+/** Количество дней в месяце, содержащем дату. */
+export function daysInMonth(iso: string): number {
+  const d = fromISO(iso);
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+}
+
+/**
+ * Приходится ли ежемесячное событие с числом `day` на дату `iso`.
+ * Если в месяце меньше дней (например, 30-е в феврале) — событие
+ * переносится на последний день месяца.
+ */
+export function isMonthlyDayOn(day: number, iso: string): boolean {
+  return dayNumber(iso) === Math.min(day, daysInMonth(iso));
+}
+
 export function isToday(iso: string): boolean {
   return iso === todayISO();
 }

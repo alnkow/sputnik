@@ -2,6 +2,7 @@ import { useAppStore } from '@/shared/store/useAppStore';
 import { EntityDialog } from '@/features/entity-dialog/ui/EntityDialog';
 import { TopBar } from '@/widgets/top-bar/ui/TopBar';
 import { CompletedModal } from '@/widgets/completed-modal/ui/CompletedModal';
+import { PaymentPreviewModal } from '@/widgets/payment-preview/ui/PaymentPreviewModal';
 import { HomePage } from '@/pages/home/ui/HomePage';
 import { PaymentsPage } from '@/pages/payments/ui/PaymentsPage';
 
@@ -14,6 +15,7 @@ export function App() {
       {isPayments ? <PaymentsPage /> : <HomePage />}
       <EntityDialog />
       <CompletedModal />
+      <PaymentPreviewModal />
     </div>
   );
 }
