@@ -3,14 +3,15 @@ import type { ID } from '@/shared/types';
 /**
  * Идентификаторы drag-and-drop элементов префиксуются по типу, чтобы один
  * DndContext мог различать цели: карточки в правой панели, чипы в календаре,
- * категории, контейнеры категорий и ячейки дней.
+ * категории, контейнеры категорий, ячейки дней и область календаря целиком.
  */
 export type DragId =
   | { type: 'sidebar-task'; id: ID }
   | { type: 'calendar-task'; id: ID }
   | { type: 'category'; id: ID }
   | { type: 'category-drop'; id: ID | null }
-  | { type: 'day'; iso: string };
+  | { type: 'day'; iso: string }
+  | { type: 'calendar' };
 
 const NONE = 'none';
 
@@ -20,6 +21,7 @@ export const dndId = {
   category: (id: ID) => `category:${id}`,
   categoryDrop: (id: ID | null) => `category-drop:${id ?? NONE}`,
   day: (iso: string) => `day:${iso}`,
+  calendar: () => 'calendar:board',
 };
 
 export function parseDndId(raw: string | number): DragId | null {
@@ -40,6 +42,8 @@ export function parseDndId(raw: string | number): DragId | null {
       return { type: 'category-drop', id: rest === NONE ? null : rest };
     case 'day':
       return { type: 'day', iso: rest };
+    case 'calendar':
+      return { type: 'calendar' };
     default:
       return null;
   }

@@ -6,6 +6,7 @@ import {
   KeyboardSensor,
   PointerSensor,
   closestCenter,
+  pointerWithin,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
@@ -20,25 +21,53 @@ import { getReadableTextColor } from '@/shared/lib/color';
 import type { DragId } from '@/shared/lib/dnd';
 import { parseDndId } from '@/shared/lib/dnd';
 
+const byType =
+  (...types: DragId['type'][]) =>
+  (container: { id: string | number }): boolean => {
+    const parsed = parseDndId(container.id);
+    return parsed ? types.includes(parsed.type) : false;
+  };
+
 /**
- * Разводит две задачи столкновений: при перетаскивании категории учитываем
- * только другие категории; при перетаскивании задачи — задачи, контейнеры
- * категорий и дни календаря.
+ * Задача из календаря: приоритет у дня под курсором; над календарём, но мимо
+ * дня — область календаря (дата не меняется); вне календаря — пусто (дата
+ * снимается). С клавиатуры курсора нет — берём ближайший день.
+ */
+const calendarTaskCollision: CollisionDetection = (args) => {
+  const days = args.droppableContainers.filter(byType('day'));
+  if (!args.pointerCoordinates) {
+    return closestCenter({ ...args, droppableContainers: days });
+  }
+  const overDay = pointerWithin({ ...args, droppableContainers: days });
+  if (overDay.length > 0) return overDay;
+  return pointerWithin({
+    ...args,
+    droppableContainers: args.droppableContainers.filter(byType('calendar')),
+  });
+};
+
+/**
+ * Разводит столкновения по типу перетаскиваемого: категория — только среди
+ * категорий; задача из панели — задачи, контейнеры категорий и дни;
+ * задача из календаря — см. calendarTaskCollision.
  */
 const collisionDetection: CollisionDetection = (args) => {
   const active = parseDndId(args.active.id);
-  const allow = (type: DragId['type']): boolean =>
-    active?.type === 'category'
-      ? type === 'category'
-      : type === 'sidebar-task' ||
-        type === 'category-drop' ||
-        type === 'day';
 
-  const droppableContainers = args.droppableContainers.filter((container) => {
-    const parsed = parseDndId(container.id);
-    return parsed ? allow(parsed.type) : false;
-  });
+  if (active?.type === 'calendar-task') return calendarTaskCollision(args);
 
+  if (active?.type === 'category') {
+    return closestCenter({
+      ...args,
+      droppableContainers: args.droppableContainers.filter(byType('category')),
+    });
+  }
+
+  const droppableContainers = args.droppableContainers.filter(
+    byType('sidebar-task', 'category-drop', 'day'),
+  );
+  const pointerCollisions = pointerWithin({ ...args, droppableContainers });
+  if (pointerCollisions.length > 0) return pointerCollisions;
   return closestCenter({ ...args, droppableContainers });
 };
 import { useAppStore } from '@/shared/store/useAppStore';
@@ -118,6 +147,7 @@ export function BoardDndProvider({ children }: BoardDndProviderProps) {
 
     if (a.type === 'calendar-task') {
       if (o?.type === 'day') store.scheduleTask(a.id, o.iso);
+      else if (!o) store.unscheduleTask(a.id);
     }
   };
 
@@ -144,14 +174,16 @@ export function BoardDndProvider({ children }: BoardDndProviderProps) {
         )}
         {active?.kind === 'task' && active.variant === 'chip' && (
           <div
-            className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium shadow-lg"
+            className="flex max-w-40 items-center gap-1.5 rounded-lg px-2 py-1.5 text-sm font-medium shadow-lg"
             style={{
               backgroundColor: active.color,
               color: getReadableTextColor(active.color),
             }}
           >
             {active.task.emoji && <span>{active.task.emoji}</span>}
-            <span className="max-w-[220px] truncate">{active.task.title}</span>
+            <span className="min-w-0 flex-1 truncate">
+              {active.task.title}
+            </span>
           </div>
         )}
         {active?.kind === 'category' && (

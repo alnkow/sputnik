@@ -142,3 +142,26 @@ export const InboxIcon = (props: IconProps) => (
     <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
   </Svg>
 );
+
+export const CalendarXIcon = (props: IconProps) => (
+  <Svg {...props}>
+    <rect x="3" y="4" width="18" height="18" rx="2" />
+    <path d="M16 2v4M8 2v4M3 10h18" />
+    <path d="m14 14-4 4M10 14l4 4" />
+  </Svg>
+);
+
+export const BanknoteIcon = (props: IconProps) => (
+  <Svg {...props}>
+    <rect x="2" y="6" width="20" height="12" rx="2" />
+    <circle cx="12" cy="12" r="2" />
+    <path d="M6 12h.01M18 12h.01" />
+  </Svg>
+);
+
+export const RotateCcwIcon = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+    <path d="M3 3v5h5" />
+  </Svg>
+);

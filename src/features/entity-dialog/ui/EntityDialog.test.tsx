@@ -103,3 +103,42 @@ describe('EntityDialog — задача', () => {
     expect(created?.description).toBe('Описание');
   });
 });
+
+describe('EntityDialog — дата задачи', () => {
+  it('в превью показывает дату и снимает её кнопкой', async () => {
+    const user = userEvent.setup();
+    const id = seedTask();
+    useAppStore.getState().scheduleTask(id, '2026-06-30');
+    render(<EntityDialog />);
+    act(() => useUiStore.getState().openEditTask(id));
+
+    expect(screen.getByLabelText('Дата')).toHaveValue('2026-06-30');
+
+    await user.click(screen.getByRole('button', { name: 'Убрать дату' }));
+
+    expect(
+      useAppStore.getState().tasks.find((t) => t.id === id)?.scheduledDate,
+    ).toBeNull();
+    expect(screen.getByLabelText('Дата')).toHaveValue('');
+    expect(screen.getByRole('button', { name: 'Убрать дату' })).toBeDisabled();
+  });
+
+  it('в режиме редактирования снимает дату при сохранении', async () => {
+    const user = userEvent.setup();
+    const id = seedTask();
+    useAppStore.getState().scheduleTask(id, '2026-06-30');
+    render(<EntityDialog />);
+    act(() => useUiStore.getState().openEditTask(id));
+
+    await user.click(screen.getByRole('button', { name: 'Редактировать' }));
+    await user.click(screen.getByRole('button', { name: 'Убрать дату' }));
+    expect(
+      useAppStore.getState().tasks.find((t) => t.id === id)?.scheduledDate,
+    ).toBe('2026-06-30');
+
+    await user.click(screen.getByRole('button', { name: 'Сохранить' }));
+    expect(
+      useAppStore.getState().tasks.find((t) => t.id === id)?.scheduledDate,
+    ).toBeNull();
+  });
+});

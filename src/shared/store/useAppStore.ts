@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware';
 import type {
   Category,
   ID,
+  Payment,
   PersistedState,
   Task,
   UiState,
@@ -15,6 +16,7 @@ import { addDays, addMonths, todayISO } from '@/shared/lib/date';
 interface AppState {
   categories: Category[];
   tasks: Task[];
+  payments: Payment[];
   ui: UiState;
 }
 
@@ -41,7 +43,15 @@ interface AppActions {
   updateTask: (
     id: ID,
     patch: Partial<
-      Pick<Task, 'title' | 'categoryId' | 'color' | 'emoji' | 'description'>
+      Pick<
+        Task,
+        | 'title'
+        | 'categoryId'
+        | 'color'
+        | 'emoji'
+        | 'description'
+        | 'scheduledDate'
+      >
     >,
   ) => void;
   deleteTask: (id: ID) => void;
@@ -54,6 +64,18 @@ interface AppActions {
     activeId: ID,
     over: { kind: 'task'; id: ID } | { kind: 'category'; id: ID | null },
   ) => void;
+
+  // --- платежи ---
+  addPayment: () => ID;
+  updatePayment: (
+    id: ID,
+    patch: Partial<Pick<Payment, 'title' | 'amount' | 'dueDay' | 'notes'>>,
+  ) => void;
+  deletePayment: (id: ID) => void;
+  setPaymentPaid: (id: ID, paid: boolean) => void;
+  /** Снимает отметку «Оплачено» со всех платежей. */
+  resetPaymentsPaid: () => void;
+  reorderPayments: (activeId: ID, overId: ID) => void;
 
   // --- интерфейс / навигация ---
   setViewMode: (mode: ViewMode) => void;
@@ -79,6 +101,7 @@ export const useAppStore = create<AppStore>()(
     (set, get) => ({
       categories: [],
       tasks: [],
+      payments: [],
       ui: initialUi,
 
       // --- категории ---
@@ -221,6 +244,60 @@ export const useAppStore = create<AppStore>()(
           return { tasks };
         }),
 
+      // --- платежи ---
+      addPayment: () => {
+        const payment: Payment = {
+          id: createId(),
+          title: '',
+          amount: null,
+          dueDay: null,
+          notes: '',
+          paid: false,
+          paidAt: null,
+        };
+        set((state) => ({ payments: [...state.payments, payment] }));
+        return payment.id;
+      },
+
+      updatePayment: (id, patch) =>
+        set((state) => ({
+          payments: state.payments.map((p) =>
+            p.id === id ? { ...p, ...patch } : p,
+          ),
+        })),
+
+      deletePayment: (id) =>
+        set((state) => ({
+          payments: state.payments.filter((p) => p.id !== id),
+        })),
+
+      setPaymentPaid: (id, paid) =>
+        set((state) => ({
+          payments: state.payments.map((p) =>
+            p.id === id
+              ? { ...p, paid, paidAt: paid ? Date.now() : null }
+              : p,
+          ),
+        })),
+
+      resetPaymentsPaid: () =>
+        set((state) => ({
+          payments: state.payments.map((p) =>
+            p.paid ? { ...p, paid: false, paidAt: null } : p,
+          ),
+        })),
+
+      reorderPayments: (activeId, overId) =>
+        set((state) => {
+          const from = state.payments.findIndex((p) => p.id === activeId);
+          const to = state.payments.findIndex((p) => p.id === overId);
+          if (from === -1 || to === -1 || from === to) return {};
+          const next = [...state.payments];
+          const [moved] = next.splice(from, 1);
+          next.splice(to, 0, moved);
+          return { payments: next };
+        }),
+
       // --- интерфейс / навигация ---
       setViewMode: (mode) =>
         set((state) => ({ ui: { ...state.ui, viewMode: mode } })),
@@ -234,6 +311,7 @@ export const useAppStore = create<AppStore>()(
       step: (dir) =>
         set((state) => {
           const { viewMode, anchorDate } = state.ui;
+          if (viewMode === 'payments') return {};
           const nextAnchor =
             viewMode === 'week'
               ? addDays(anchorDate, 7 * dir)
@@ -251,6 +329,7 @@ export const useAppStore = create<AppStore>()(
         set({
           categories: next.categories,
           tasks: next.tasks,
+          payments: next.payments,
           ui: next.ui,
         }),
     }),
@@ -260,6 +339,7 @@ export const useAppStore = create<AppStore>()(
       partialize: (state) => ({
         categories: state.categories,
         tasks: state.tasks,
+        payments: state.payments,
         ui: state.ui,
       }),
     },

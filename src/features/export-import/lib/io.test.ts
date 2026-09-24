@@ -129,16 +129,18 @@ describe('parseImport', () => {
 
 describe('buildExport', () => {
   it('собирает снимок состояния с текущей версией схемы', () => {
-    const snapshot = buildExport(
-      [{ id: 'cat-1', name: 'Работа', color: '#fff', collapsed: false }],
-      [],
-      { viewMode: 'week', anchorDate: '2026-06-28', importantOnly: false },
-    );
+    const snapshot = buildExport({
+      categories: [{ id: 'cat-1', name: 'Работа', color: '#fff', collapsed: false }],
+      tasks: [],
+      payments: [],
+      ui: { viewMode: 'week', anchorDate: '2026-06-28', importantOnly: false },
+    });
 
     expect(snapshot).toEqual({
       version: SCHEMA_VERSION,
       categories: [{ id: 'cat-1', name: 'Работа', color: '#fff', collapsed: false }],
       tasks: [],
+      payments: [],
       ui: { viewMode: 'week', anchorDate: '2026-06-28', importantOnly: false },
     });
   });

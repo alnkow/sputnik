@@ -11,6 +11,8 @@ export type DialogState =
 interface UiStore {
   dialog: DialogState;
   completedOpen: boolean;
+  /** Только что созданный платёж — его строка открывается в режиме редактирования. */
+  createdPaymentId: ID | null;
   openCreateTask: (presetCategoryId?: ID | null) => void;
   openCreateCategory: () => void;
   openEditTask: (id: ID) => void;
@@ -18,12 +20,14 @@ interface UiStore {
   closeDialog: () => void;
   openCompleted: () => void;
   closeCompleted: () => void;
+  markPaymentCreated: (id: ID) => void;
 }
 
 /** Транзиентное состояние интерфейса (диалоги, модалки) — не сохраняется. */
 export const useUiStore = create<UiStore>((set) => ({
   dialog: { kind: 'closed' },
   completedOpen: false,
+  createdPaymentId: null,
   openCreateTask: (presetCategoryId = null) =>
     set({ dialog: { kind: 'create-task', presetCategoryId } }),
   openCreateCategory: () => set({ dialog: { kind: 'create-category' } }),
@@ -32,4 +36,5 @@ export const useUiStore = create<UiStore>((set) => ({
   closeDialog: () => set({ dialog: { kind: 'closed' } }),
   openCompleted: () => set({ completedOpen: true }),
   closeCompleted: () => set({ completedOpen: false }),
+  markPaymentCreated: (id) => set({ createdPaymentId: id }),
 }));

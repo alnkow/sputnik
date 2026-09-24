@@ -1,5 +1,6 @@
 import type {
   Category,
+  Payment,
   PersistedState,
   Task,
   UiState,
@@ -65,9 +66,37 @@ function normalizeTask(raw: unknown): Task | null {
   };
 }
 
+function normalizePayment(raw: unknown): Payment | null {
+  if (!isObject(raw)) return null;
+  if (typeof raw.id !== 'string') return null;
+  const amount =
+    typeof raw.amount === 'number' && Number.isFinite(raw.amount)
+      ? raw.amount
+      : null;
+  const dueDay =
+    typeof raw.dueDay === 'number' &&
+    Number.isInteger(raw.dueDay) &&
+    raw.dueDay >= 1 &&
+    raw.dueDay <= 31
+      ? raw.dueDay
+      : null;
+  const paid = asBool(raw.paid);
+  return {
+    id: raw.id,
+    title: asString(raw.title),
+    amount,
+    dueDay,
+    notes: asString(raw.notes),
+    paid,
+    paidAt: paid && typeof raw.paidAt === 'number' ? raw.paidAt : null,
+  };
+}
+
+const VIEW_MODES: readonly ViewMode[] = ['week', 'month', 'payments'];
+
 function normalizeUi(raw: unknown): UiState {
   const obj = isObject(raw) ? raw : {};
-  const viewMode: ViewMode = obj.viewMode === 'month' ? 'month' : 'week';
+  const viewMode = VIEW_MODES.find((m) => m === obj.viewMode) ?? 'week';
   return {
     viewMode,
     anchorDate: normalizeISODate(obj.anchorDate, todayISO()),
@@ -101,6 +130,10 @@ export function parseImport(text: string): ImportResult {
   const tasks = raw.tasks
     .map(normalizeTask)
     .filter((t): t is Task => t !== null);
+  // Платежей может не быть в старых резервных копиях.
+  const payments = (Array.isArray(raw.payments) ? raw.payments : [])
+    .map(normalizePayment)
+    .filter((p): p is Payment => p !== null);
 
   // Подчищаем ссылки на несуществующие категории.
   const categoryIds = new Set(categories.map((c) => c.id));
@@ -116,18 +149,25 @@ export function parseImport(text: string): ImportResult {
       version: SCHEMA_VERSION,
       categories,
       tasks,
+      payments,
       ui: normalizeUi(raw.ui),
     },
   };
 }
 
 /** Формирует снимок состояния для экспорта. */
-export function buildExport(
-  categories: Category[],
-  tasks: Task[],
-  ui: UiState,
-): PersistedState {
-  return { version: SCHEMA_VERSION, categories, tasks, ui };
+export function buildExport({
+  categories,
+  tasks,
+  payments,
+  ui,
+}: {
+  categories: Category[];
+  tasks: Task[];
+  payments: Payment[];
+  ui: UiState;
+}): PersistedState {
+  return { version: SCHEMA_VERSION, categories, tasks, payments, ui };
 }
 
 /** Скачивает строку как файл. */

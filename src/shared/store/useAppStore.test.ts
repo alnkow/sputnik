@@ -4,6 +4,7 @@ const resetStore = () => {
   useAppStore.setState({
     categories: [],
     tasks: [],
+    payments: [],
     ui: { viewMode: 'week', anchorDate: '2026-06-28', importantOnly: false },
   });
 };
@@ -141,5 +142,52 @@ describe('навигация по календарю', () => {
     const { setViewMode } = useAppStore.getState();
     setViewMode('month');
     expect(useAppStore.getState().ui.viewMode).toBe('month');
+  });
+});
+
+describe('платежи', () => {
+  const add = (title: string) => {
+    const store = useAppStore.getState();
+    const id = store.addPayment();
+    store.updatePayment(id, { title });
+    return id;
+  };
+  const payment = (id: string) =>
+    useAppStore.getState().payments.find((p) => p.id === id);
+
+  it('отметка об оплате сохраняет момент клика, снятие — очищает', () => {
+    const id = add('Интернет');
+    useAppStore.getState().setPaymentPaid(id, true);
+    expect(payment(id)?.paid).toBe(true);
+    expect(typeof payment(id)?.paidAt).toBe('number');
+
+    useAppStore.getState().setPaymentPaid(id, false);
+    expect(payment(id)).toMatchObject({ paid: false, paidAt: null });
+  });
+
+  it('resetPaymentsPaid снимает все отметки', () => {
+    const a = add('Аренда');
+    const b = add('Связь');
+    useAppStore.getState().setPaymentPaid(a, true);
+    useAppStore.getState().setPaymentPaid(b, true);
+
+    useAppStore.getState().resetPaymentsPaid();
+
+    expect(useAppStore.getState().payments.every((p) => !p.paid)).toBe(true);
+  });
+
+  it('reorderPayments переставляет строки', () => {
+    const a = add('A');
+    const b = add('B');
+    const c = add('C');
+    useAppStore.getState().reorderPayments(c, a);
+    expect(useAppStore.getState().payments.map((p) => p.id)).toEqual([c, a, b]);
+  });
+
+  it('step не меняет дату на странице платежей', () => {
+    const { setViewMode, step } = useAppStore.getState();
+    setViewMode('payments');
+    step(1);
+    expect(useAppStore.getState().ui.anchorDate).toBe('2026-06-28');
   });
 });

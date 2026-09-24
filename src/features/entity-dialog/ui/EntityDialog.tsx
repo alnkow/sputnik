@@ -12,6 +12,7 @@ import type { DialogState } from '@/shared/store/useUiStore';
 import {
   Button,
   ColorPicker,
+  DateField,
   EmojiPicker,
   Field,
   Input,
@@ -33,6 +34,7 @@ interface FormState {
   inheritColor: boolean;
   color: string;
   emoji: string | null;
+  scheduledDate: string | null;
 }
 
 function getInitialState(dialog: OpenDialog): FormState {
@@ -52,6 +54,7 @@ function getInitialState(dialog: OpenDialog): FormState {
         inheritColor: true,
         color: categoryColor(dialog.presetCategoryId),
         emoji: null,
+        scheduledDate: null,
       };
     case 'create-category':
       return {
@@ -62,6 +65,7 @@ function getInitialState(dialog: OpenDialog): FormState {
         inheritColor: false,
         color: DEFAULT_CATEGORY_COLOR,
         emoji: null,
+        scheduledDate: null,
       };
     case 'edit-task': {
       const task = tasks.find((t) => t.id === dialog.id);
@@ -73,6 +77,7 @@ function getInitialState(dialog: OpenDialog): FormState {
         inheritColor: task ? task.color === null : true,
         color: task?.color ?? categoryColor(task?.categoryId ?? null),
         emoji: task?.emoji ?? null,
+        scheduledDate: task?.scheduledDate ?? null,
       };
     }
     case 'edit-category': {
@@ -87,6 +92,7 @@ function getInitialState(dialog: OpenDialog): FormState {
         inheritColor: false,
         color: category?.color ?? DEFAULT_CATEGORY_COLOR,
         emoji: null,
+        scheduledDate: null,
       };
     }
   }
@@ -109,6 +115,12 @@ function TaskPreview({
   color: string;
   categoryName: string;
 }) {
+  const handleDateChange = (date: string | null) => {
+    const store = useAppStore.getState();
+    if (date) store.scheduleTask(task.id, date);
+    else store.unscheduleTask(task.id);
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-start gap-2.5">
@@ -135,6 +147,9 @@ function TaskPreview({
           {task.description}
         </p>
       )}
+      <Field label="Дата">
+        <DateField value={task.scheduledDate} onChange={handleDateChange} />
+      </Field>
     </div>
   );
 }
@@ -176,7 +191,10 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
         description: form.description.trim() || null,
       };
       if (dialog.kind === 'edit-task') {
-        store.updateTask(dialog.id, payload);
+        store.updateTask(dialog.id, {
+          ...payload,
+          scheduledDate: form.scheduledDate,
+        });
       } else {
         store.addTask(payload);
       }
@@ -217,7 +235,13 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
               <CheckIcon className="h-4 w-4" />
               Завершить
             </Button>
-            <Button variant="primary" onClick={() => setMode('edit')}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setForm(getInitialState(dialog));
+                setMode('edit');
+              }}
+            >
               <PencilIcon className="h-4 w-4" />
               Редактировать
             </Button>
@@ -301,6 +325,15 @@ function DialogForm({ dialog }: { dialog: OpenDialog }) {
                 placeholder="Дополнительные детали (необязательно)"
               />
             </Field>
+
+            {dialog.kind === 'edit-task' && (
+              <Field label="Дата">
+                <DateField
+                  value={form.scheduledDate}
+                  onChange={(scheduledDate) => patch({ scheduledDate })}
+                />
+              </Field>
+            )}
 
             <Field label="Категория">
               <select

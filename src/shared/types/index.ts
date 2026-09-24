@@ -1,6 +1,6 @@
 export type ID = string;
 
-export type ViewMode = 'week' | 'month';
+export type ViewMode = 'week' | 'month' | 'payments';
 
 export interface Category {
   id: ID;
@@ -30,6 +30,20 @@ export interface Task {
   createdAt: number;
 }
 
+/** Ежемесячный платёж. Порядок = порядок в массиве. */
+export interface Payment {
+  id: ID;
+  title: string;
+  /** сумма или null, если не указана */
+  amount: number | null;
+  /** число месяца (1–31) или null */
+  dueDay: number | null;
+  notes: string;
+  paid: boolean;
+  /** момент отметки об оплате (ms) или null */
+  paidAt: number | null;
+}
+
 export interface UiState {
   viewMode: ViewMode;
   /** 'YYYY-MM-DD' — определяет текущую отображаемую неделю/месяц */
@@ -43,5 +57,6 @@ export interface PersistedState {
   version: number;
   categories: Category[];
   tasks: Task[];
+  payments: Payment[];
   ui: UiState;
 }

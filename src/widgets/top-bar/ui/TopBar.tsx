@@ -7,6 +7,7 @@ import { Button } from '@/shared/ui/Button';
 import { IconButton } from '@/shared/ui/IconButton';
 import { Logo } from '@/shared/ui/Logo';
 import {
+  BanknoteIcon,
   CheckCircleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -19,6 +20,7 @@ import { ExportImportButtons } from '@/features/export-import/ui/ExportImportBut
 const modes: { value: ViewMode; label: string; icon: typeof GridIcon }[] = [
   { value: 'week', label: 'Неделя', icon: ColumnsIcon },
   { value: 'month', label: 'Месяц', icon: GridIcon },
+  { value: 'payments', label: 'Платежи', icon: BanknoteIcon },
 ];
 
 export function TopBar() {
@@ -29,7 +31,10 @@ export function TopBar() {
   const goToday = useAppStore((s) => s.goToday);
   const openCreateTask = useUiStore((s) => s.openCreateTask);
   const openCompleted = useUiStore((s) => s.openCompleted);
+  const markPaymentCreated = useUiStore((s) => s.markPaymentCreated);
+  const addPayment = useAppStore((s) => s.addPayment);
 
+  const isCalendar = viewMode !== 'payments';
   const periodLabel =
     viewMode === 'week'
       ? formatWeekRange(anchorDate)
@@ -63,24 +68,44 @@ export function TopBar() {
         ))}
       </div>
 
-      <div className="flex items-center gap-1">
-        <IconButton onClick={() => step(-1)} aria-label="Назад" title="Назад">
-          <ChevronLeftIcon className="h-5 w-5" />
-        </IconButton>
-        <Button size="sm" variant="secondary" onClick={goToday}>
-          Сегодня
-        </Button>
-        <IconButton onClick={() => step(1)} aria-label="Вперёд" title="Вперёд">
-          <ChevronRightIcon className="h-5 w-5" />
-        </IconButton>
-      </div>
+      {isCalendar && (
+        <>
+          <div className="flex items-center gap-1">
+            <IconButton
+              onClick={() => step(-1)}
+              aria-label="Назад"
+              title="Назад"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+            </IconButton>
+            <Button size="sm" variant="secondary" onClick={goToday}>
+              Сегодня
+            </Button>
+            <IconButton
+              onClick={() => step(1)}
+              aria-label="Вперёд"
+              title="Вперёд"
+            >
+              <ChevronRightIcon className="h-5 w-5" />
+            </IconButton>
+          </div>
 
-      <span className="min-w-40 text-sm font-medium text-slate-600 capitalize">
-        {periodLabel}
-      </span>
+          <span className="min-w-40 text-sm font-medium text-slate-600 capitalize">
+            {periodLabel}
+          </span>
+        </>
+      )}
 
       <div className="ml-auto flex flex-wrap items-center gap-2">
-        <Button variant="primary" size="sm" onClick={() => openCreateTask(null)}>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() =>
+            isCalendar
+              ? openCreateTask(null)
+              : markPaymentCreated(addPayment())
+          }
+        >
           <PlusIcon className="h-4 w-4" />
           Создать
         </Button>

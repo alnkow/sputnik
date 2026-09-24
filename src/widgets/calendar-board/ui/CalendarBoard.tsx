@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
+import type { ReactNode } from 'react';
+import { useDroppable } from '@dnd-kit/core';
 import type { Task } from '@/shared/types';
 import { useAppStore } from '@/shared/store/useAppStore';
+import { dndId } from '@/shared/lib/dnd';
 import {
   buildCategoryIndex,
   resolveTaskColor,
@@ -15,7 +18,28 @@ import {
 import { WeekDayColumn } from './WeekDayColumn';
 import { MonthDayCell } from './MonthDayCell';
 
+/**
+ * Область календаря целиком: задача, брошенная внутри неё мимо дня, сохраняет
+ * дату; брошенная снаружи — снимается с календаря.
+ */
+function CalendarDropArea({ children }: { children: ReactNode }) {
+  const { setNodeRef } = useDroppable({ id: dndId.calendar() });
+  return (
+    <div ref={setNodeRef} className="h-full">
+      {children}
+    </div>
+  );
+}
+
 export function CalendarBoard() {
+  return (
+    <CalendarDropArea>
+      <CalendarGrid />
+    </CalendarDropArea>
+  );
+}
+
+function CalendarGrid() {
   const categories = useAppStore((s) => s.categories);
   const tasks = useAppStore((s) => s.tasks);
   const viewMode = useAppStore((s) => s.ui.viewMode);

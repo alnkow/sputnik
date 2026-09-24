@@ -6,6 +6,7 @@ export { Tooltip } from './Tooltip';
 export { ColorPicker } from './ColorPicker';
 export { EmojiPicker } from './EmojiPicker';
 export { Input, Field } from './Input';
+export { DateField } from './DateField';
 export { Textarea } from './Textarea';
 export { Logo } from './Logo';
 export * from './icons';

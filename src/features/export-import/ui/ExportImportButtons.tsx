@@ -9,8 +9,7 @@ export function ExportImportButtons() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
-    const { categories, tasks, ui } = useAppStore.getState();
-    const snapshot = buildExport(categories, tasks, ui);
+    const snapshot = buildExport(useAppStore.getState());
     downloadFile(
       `task-manager-${todayISO()}.json`,
       JSON.stringify(snapshot, null, 2),
@@ -24,9 +23,10 @@ export function ExportImportButtons() {
       window.alert(`Не удалось импортировать: ${result.error}`);
       return;
     }
-    const { categories, tasks } = result.data;
+    const { categories, tasks, payments } = result.data;
     const confirmed = window.confirm(
-      `Импортировать ${categories.length} категорий и ${tasks.length} задач? ` +
+      `Импортировать ${categories.length} категорий, ${tasks.length} задач ` +
+        `и ${payments.length} платежей? ` +
         'Текущие данные будут заменены.',
     );
     if (confirmed) {
