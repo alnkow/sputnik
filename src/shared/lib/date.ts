@@ -5,6 +5,10 @@
 
 export const WEEKDAYS_SHORT = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'] as const;
 
+export const WEEKDAYS_FULL = [
+  'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье',
+] as const;
+
 export const MONTHS_NOMINATIVE = [
   'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
@@ -141,6 +145,11 @@ export function isWeekend(iso: string): boolean {
 /** Короткая подпись дня недели для даты. */
 export function weekdayShort(iso: string): string {
   return WEEKDAYS_SHORT[mondayIndex(fromISO(iso))];
+}
+
+/** Полное название дня недели для даты. */
+export function weekdayFull(iso: string): string {
+  return WEEKDAYS_FULL[mondayIndex(fromISO(iso))];
 }
 
 /** Номер дня месяца. */

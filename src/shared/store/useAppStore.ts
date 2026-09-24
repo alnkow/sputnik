@@ -97,8 +97,11 @@ interface AppActions {
 
 export type AppStore = AppState & AppActions;
 
+/** Страница, с которой всегда открывается приложение. */
+const START_VIEW: ViewMode = 'today';
+
 const initialUi: UiState = {
-  viewMode: 'week',
+  viewMode: START_VIEW,
   anchorDate: todayISO(),
   importantOnly: false,
 };
@@ -368,6 +371,15 @@ export const useAppStore = create<AppStore>()(
     {
       name: STORAGE_KEY,
       version: SCHEMA_VERSION,
+      // Приложение всегда открывается на «Сегодня», остальное — из хранилища.
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<AppState> | undefined;
+        return {
+          ...current,
+          ...saved,
+          ui: { ...current.ui, ...saved?.ui, viewMode: START_VIEW },
+        };
+      },
       partialize: (state) => ({
         categories: state.categories,
         tasks: state.tasks,

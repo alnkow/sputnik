@@ -19,5 +19,11 @@ dist-ssr
 *.sln
 *.sw?
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Local Claude Code settings
+.claude/settings.local.json
+
 instructions.md
 edits.md

@@ -51,11 +51,19 @@ export function TopBar() {
 
   return (
     <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b border-slate-200 bg-white px-4 py-2.5">
-      <h1 className="flex items-center gap-2">
-        <Logo className="h-7 w-7 text-red-700" />
-        <span className="font-soviet text-2xl tracking-wide text-red-700">
-          Sputnik
-        </span>
+      <h1>
+        <button
+          type="button"
+          onClick={() => setViewMode('today')}
+          aria-label="Сегодня"
+          title="Сегодня"
+          className="flex items-center gap-2 rounded-lg px-1 py-0.5 transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-400"
+        >
+          <Logo className="h-7 w-7 text-red-700" />
+          <span className="font-soviet text-2xl tracking-wide text-red-700">
+            Sputnik
+          </span>
+        </button>
       </h1>
 
       <div className="inline-flex rounded-lg bg-slate-100 p-0.5">
@@ -106,14 +114,16 @@ export function TopBar() {
       )}
 
       <div className="ml-auto flex flex-wrap items-center gap-2">
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={handleCreate}
-        >
-          <PlusIcon className="h-4 w-4" />
-          Создать
-        </Button>
+        {viewMode !== 'today' && (
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleCreate}
+          >
+            <PlusIcon className="h-4 w-4" />
+            Создать
+          </Button>
+        )}
         <Button variant="secondary" size="sm" onClick={openCompleted}>
           <CheckCircleIcon className="h-4 w-4" />
           Выполненные

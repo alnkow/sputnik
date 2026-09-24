@@ -84,7 +84,10 @@ export const PaymentRow = memo(function PaymentRow({
       style={{ transform: CSS.Translate.toString(transform), transition }}
       className={cn(
         'border-b border-slate-100 last:border-b-0',
-        payment.paid ? 'bg-green-50/60' : 'bg-white',
+        'transition-colors',
+        payment.paid
+          ? 'bg-green-50/60 hover:bg-green-100/70'
+          : 'bg-white hover:bg-slate-50',
         isDragging && 'relative z-10 shadow-lg ring-1 ring-slate-200',
       )}
     >

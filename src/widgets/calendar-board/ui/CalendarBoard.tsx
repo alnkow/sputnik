@@ -15,7 +15,7 @@ import {
   isPast,
   isSameMonth,
 } from '@/shared/lib/date';
-import { paymentsOn } from '@/entities/payment/model/selectors';
+import { unpaidPaymentsOn } from '@/entities/payment/model/selectors';
 import { eventsOn } from '@/entities/event/model/selectors';
 import { WeekDayColumn } from './WeekDayColumn';
 import { MonthDayCell } from './MonthDayCell';
@@ -68,7 +68,8 @@ function CalendarGrid() {
   }, [tasks]);
 
   const tasksOn = (iso: string): Task[] => scheduled.get(iso) ?? [];
-  const paymentsFor = (iso: string): Payment[] => paymentsOn(payments, iso);
+  const paymentsFor = (iso: string): Payment[] =>
+    unpaidPaymentsOn(payments, iso);
   const eventsFor = (iso: string): CalendarEvent[] => eventsOn(events, iso);
 
   if (viewMode === 'week') {

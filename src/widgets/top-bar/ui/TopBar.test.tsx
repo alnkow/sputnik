@@ -36,3 +36,18 @@ describe('TopBar — кнопка «Создать»', () => {
     expect(useUiStore.getState().dialog.kind).toBe('closed');
   });
 });
+
+describe('TopBar — логотип', () => {
+  it('клик по логотипу открывает страницу «Сегодня»', async () => {
+    setup('payments');
+    await userEvent.click(screen.getByRole('button', { name: 'Сегодня' }));
+    expect(useAppStore.getState().ui.viewMode).toBe('today');
+  });
+});
+
+describe('TopBar — страница «Сегодня»', () => {
+  it('кнопка «Создать» скрыта', () => {
+    setup('today');
+    expect(screen.queryByRole('button', { name: 'Создать' })).not.toBeInTheDocument();
+  });
+});

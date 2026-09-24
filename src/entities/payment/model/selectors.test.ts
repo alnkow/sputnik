@@ -1,5 +1,5 @@
 import type { Payment } from '@/shared/types';
-import { isPaidInMonthOf, paymentsOn } from './selectors';
+import { isPaidInMonthOf, paymentsOn, unpaidPaymentsOn } from './selectors';
 
 const make = (patch: Partial<Payment>): Payment => ({
   id: 'p',
@@ -29,5 +29,17 @@ describe('isPaidInMonthOf', () => {
     expect(isPaidInMonthOf(paid, '2026-09-30')).toBe(true);
     expect(isPaidInMonthOf(paid, '2026-10-30')).toBe(false);
     expect(isPaidInMonthOf(make({ paid: false }), '2026-09-30')).toBe(false);
+  });
+});
+
+describe('unpaidPaymentsOn', () => {
+  it('скрывает платёж, оплаченный в этом месяце, но показывает в следующем', () => {
+    const paid = make({
+      dueDay: 30,
+      paid: true,
+      paidAt: new Date(2026, 8, 24).getTime(),
+    });
+    expect(unpaidPaymentsOn([paid], '2026-09-30')).toEqual([]);
+    expect(unpaidPaymentsOn([paid], '2026-10-30')).toEqual([paid]);
   });
 });

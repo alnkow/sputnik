@@ -1,6 +1,6 @@
 export type ID = string;
 
-export type ViewMode = 'week' | 'month' | 'payments' | 'events';
+export type ViewMode = 'today' | 'week' | 'month' | 'payments' | 'events';
 
 export interface Category {
   id: ID;

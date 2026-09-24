@@ -191,3 +191,26 @@ describe('платежи', () => {
     expect(useAppStore.getState().ui.anchorDate).toBe('2026-06-28');
   });
 });
+
+describe('старт приложения', () => {
+  it('после восстановления из хранилища открывается «Сегодня»', async () => {
+    localStorage.setItem(
+      'task-manager',
+      JSON.stringify({
+        state: {
+          categories: [],
+          tasks: [],
+          ui: { viewMode: 'month', anchorDate: '2026-06-28', importantOnly: true },
+        },
+        version: 1,
+      }),
+    );
+    await useAppStore.persist.rehydrate();
+
+    const { ui } = useAppStore.getState();
+    expect(ui.viewMode).toBe('today');
+    expect(ui.anchorDate).toBe('2026-06-28');
+    expect(ui.importantOnly).toBe(true);
+    localStorage.removeItem('task-manager');
+  });
+});

@@ -10,8 +10,10 @@ import { PrintReport } from '@/widgets/print-report/ui/PrintReport';
 import { HomePage } from '@/pages/home/ui/HomePage';
 import { PaymentsPage } from '@/pages/payments/ui/PaymentsPage';
 import { EventsPage } from '@/pages/events/ui/EventsPage';
+import { TodayPage } from '@/pages/today/ui/TodayPage';
 
 const pages: Record<ViewMode, () => ReactNode> = {
+  today: TodayPage,
   week: HomePage,
   month: HomePage,
   payments: PaymentsPage,

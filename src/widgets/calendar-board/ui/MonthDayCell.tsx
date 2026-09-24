@@ -5,7 +5,6 @@ import { dndId } from '@/shared/lib/dnd';
 import { dayNumber, isToday } from '@/shared/lib/date';
 import { useUiStore } from '@/shared/store/useUiStore';
 import { TaskSquare } from '@/entities/task/ui/TaskSquare';
-import { isPaidInMonthOf } from '@/entities/payment/model/selectors';
 import { PaymentSquare } from '@/entities/payment/ui/PaymentSquare';
 import { EventSquare } from '@/entities/event/ui/EventSquare';
 
@@ -100,7 +99,6 @@ export function MonthDayCell({
           <PaymentSquare
             key={payment.id}
             payment={payment}
-            paid={isPaidInMonthOf(payment, iso)}
             onOpen={() => openPaymentPreview(payment.id, iso)}
           />
         ))}

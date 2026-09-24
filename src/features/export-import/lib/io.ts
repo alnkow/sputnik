@@ -115,7 +115,13 @@ function normalizeEvent(raw: unknown): CalendarEvent | null {
   };
 }
 
-const VIEW_MODES: readonly ViewMode[] = ['week', 'month', 'payments', 'events'];
+const VIEW_MODES: readonly ViewMode[] = [
+  'today',
+  'week',
+  'month',
+  'payments',
+  'events',
+];
 
 function normalizeUi(raw: unknown): UiState {
   const obj = isObject(raw) ? raw : {};

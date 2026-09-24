@@ -10,7 +10,6 @@ import {
   weekdayShort,
 } from '@/shared/lib/date';
 import { useUiStore } from '@/shared/store/useUiStore';
-import { isPaidInMonthOf } from '@/entities/payment/model/selectors';
 import { PaymentChip } from '@/entities/payment/ui/PaymentChip';
 import { EventChip } from '@/entities/event/ui/EventChip';
 import { DraggableChip } from './DraggableChip';
@@ -80,7 +79,6 @@ export function WeekDayColumn({
           <PaymentChip
             key={payment.id}
             payment={payment}
-            paid={isPaidInMonthOf(payment, iso)}
             onOpen={() => openPaymentPreview(payment.id, iso)}
           />
         ))}

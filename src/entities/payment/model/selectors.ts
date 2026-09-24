@@ -8,6 +8,11 @@ export function paymentsOn(payments: Payment[], iso: string): Payment[] {
   );
 }
 
+/** Неоплаченные платежи на дату — то, что показывается в календаре. */
+export function unpaidPaymentsOn(payments: Payment[], iso: string): Payment[] {
+  return paymentsOn(payments, iso).filter((p) => !isPaidInMonthOf(p, iso));
+}
+
 /**
  * Отметка «Оплачено» относится к месяцу, в котором её поставили:
  * в календаре платёж считается оплаченным только в этом месяце.
