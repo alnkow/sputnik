@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
-import type { Payment, Task } from '@/shared/types';
+import type { CalendarEvent, Payment, Task } from '@/shared/types';
 import { cn } from '@/shared/lib/cn';
 import { dndId } from '@/shared/lib/dnd';
 import {
@@ -12,12 +12,14 @@ import {
 import { useUiStore } from '@/shared/store/useUiStore';
 import { isPaidInMonthOf } from '@/entities/payment/model/selectors';
 import { PaymentChip } from '@/entities/payment/ui/PaymentChip';
+import { EventChip } from '@/entities/event/ui/EventChip';
 import { DraggableChip } from './DraggableChip';
 
 interface WeekDayColumnProps {
   iso: string;
   tasks: Task[];
   payments: Payment[];
+  events: CalendarEvent[];
   colorOf: (task: Task) => string;
 }
 
@@ -25,9 +27,11 @@ export function WeekDayColumn({
   iso,
   tasks,
   payments,
+  events,
   colorOf,
 }: WeekDayColumnProps) {
   const openPaymentPreview = useUiStore((s) => s.openPaymentPreview);
+  const setEventDialog = useUiStore((s) => s.setEventDialog);
   const { setNodeRef, isOver } = useDroppable({ id: dndId.day(iso) });
   const today = isToday(iso);
 
@@ -63,6 +67,15 @@ export function WeekDayColumn({
           isOver && 'bg-accent-50/70',
         )}
       >
+        {events.map((event) => (
+          <EventChip
+            key={event.id}
+            event={event}
+            onOpen={() =>
+              setEventDialog({ kind: 'view', id: event.id, readOnly: true })
+            }
+          />
+        ))}
         {payments.map((payment) => (
           <PaymentChip
             key={payment.id}
@@ -74,11 +87,12 @@ export function WeekDayColumn({
         {tasks.map((task) => (
           <DraggableChip key={task.id} task={task} color={colorOf(task)} />
         ))}
-        {tasks.length === 0 && payments.length === 0 && !isPast(iso) && (
-          <div className="flex h-full min-h-16 items-center justify-center text-center text-xs text-slate-300">
-            Перетащите задачу сюда
-          </div>
-        )}
+        {tasks.length + payments.length + events.length === 0 &&
+          !isPast(iso) && (
+            <div className="flex h-full min-h-16 items-center justify-center text-center text-xs text-slate-300">
+              Перетащите задачу сюда
+            </div>
+          )}
       </div>
     </div>
   );

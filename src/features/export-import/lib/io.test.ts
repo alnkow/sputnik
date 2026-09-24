@@ -133,6 +133,7 @@ describe('buildExport', () => {
       categories: [{ id: 'cat-1', name: 'Работа', color: '#fff', collapsed: false }],
       tasks: [],
       payments: [],
+      events: [],
       ui: { viewMode: 'week', anchorDate: '2026-06-28', importantOnly: false },
     });
 
@@ -141,6 +142,7 @@ describe('buildExport', () => {
       categories: [{ id: 'cat-1', name: 'Работа', color: '#fff', collapsed: false }],
       tasks: [],
       payments: [],
+      events: [],
       ui: { viewMode: 'week', anchorDate: '2026-06-28', importantOnly: false },
     });
   });

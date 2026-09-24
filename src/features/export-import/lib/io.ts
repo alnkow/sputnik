@@ -1,4 +1,5 @@
 import type {
+  CalendarEvent,
   Category,
   Payment,
   PersistedState,
@@ -92,7 +93,29 @@ function normalizePayment(raw: unknown): Payment | null {
   };
 }
 
-const VIEW_MODES: readonly ViewMode[] = ['week', 'month', 'payments'];
+function asIntInRange(v: unknown, min: number, max: number): number | null {
+  return typeof v === 'number' && Number.isInteger(v) && v >= min && v <= max
+    ? v
+    : null;
+}
+
+function normalizeEvent(raw: unknown): CalendarEvent | null {
+  if (!isObject(raw)) return null;
+  if (typeof raw.id !== 'string') return null;
+  const month = asIntInRange(raw.month, 1, 12);
+  if (month === null) return null;
+  return {
+    id: raw.id,
+    title: asString(raw.title, 'Без названия'),
+    description: typeof raw.description === 'string' ? raw.description : null,
+    month,
+    color: normalizeHexColor(raw.color, DEFAULT_CATEGORY_COLOR),
+    emoji: typeof raw.emoji === 'string' ? raw.emoji : null,
+    calendarDay: asIntInRange(raw.calendarDay, 1, 31),
+  };
+}
+
+const VIEW_MODES: readonly ViewMode[] = ['week', 'month', 'payments', 'events'];
 
 function normalizeUi(raw: unknown): UiState {
   const obj = isObject(raw) ? raw : {};
@@ -134,6 +157,9 @@ export function parseImport(text: string): ImportResult {
   const payments = (Array.isArray(raw.payments) ? raw.payments : [])
     .map(normalizePayment)
     .filter((p): p is Payment => p !== null);
+  const events = (Array.isArray(raw.events) ? raw.events : [])
+    .map(normalizeEvent)
+    .filter((e): e is CalendarEvent => e !== null);
 
   // Подчищаем ссылки на несуществующие категории.
   const categoryIds = new Set(categories.map((c) => c.id));
@@ -150,6 +176,7 @@ export function parseImport(text: string): ImportResult {
       categories,
       tasks,
       payments,
+      events,
       ui: normalizeUi(raw.ui),
     },
   };
@@ -160,14 +187,16 @@ export function buildExport({
   categories,
   tasks,
   payments,
+  events,
   ui,
 }: {
   categories: Category[];
   tasks: Task[];
   payments: Payment[];
+  events: CalendarEvent[];
   ui: UiState;
 }): PersistedState {
-  return { version: SCHEMA_VERSION, categories, tasks, payments, ui };
+  return { version: SCHEMA_VERSION, categories, tasks, payments, events, ui };
 }
 
 /** Скачивает строку как файл. */

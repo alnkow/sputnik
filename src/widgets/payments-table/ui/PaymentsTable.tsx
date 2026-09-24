@@ -20,6 +20,7 @@ import { useUiStore } from '@/shared/store/useUiStore';
 import { Button } from '@/shared/ui/Button';
 import { Modal } from '@/shared/ui/Modal';
 import { RotateCcwIcon } from '@/shared/ui/icons';
+import { getPaymentTotals } from '@/entities/payment/model/selectors';
 import { PaymentRow } from './PaymentRow';
 
 const HEADERS = ['', 'Название', 'Сумма', 'Дата платежа', 'Заметки', '', ''];
@@ -40,17 +41,7 @@ export function PaymentsTable() {
   );
 
   const ids = useMemo(() => payments.map((p) => p.id), [payments]);
-  const totals = useMemo(() => {
-    let total = 0;
-    let unpaid = 0;
-    let paidCount = 0;
-    for (const p of payments) {
-      total += p.amount ?? 0;
-      if (p.paid) paidCount += 1;
-      else unpaid += p.amount ?? 0;
-    }
-    return { total, unpaid, paidCount };
-  }, [payments]);
+  const totals = useMemo(() => getPaymentTotals(payments), [payments]);
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (over && active.id !== over.id) {

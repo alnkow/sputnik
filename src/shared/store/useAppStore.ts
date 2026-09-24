@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type {
+  CalendarEvent,
   Category,
   ID,
   Payment,
@@ -17,6 +18,7 @@ interface AppState {
   categories: Category[];
   tasks: Task[];
   payments: Payment[];
+  events: CalendarEvent[];
   ui: UiState;
 }
 
@@ -77,6 +79,11 @@ interface AppActions {
   resetPaymentsPaid: () => void;
   reorderPayments: (activeId: ID, overId: ID) => void;
 
+  // --- события ---
+  addEvent: (input: Omit<CalendarEvent, 'id'>) => ID;
+  updateEvent: (id: ID, patch: Partial<Omit<CalendarEvent, 'id'>>) => void;
+  deleteEvent: (id: ID) => void;
+
   // --- интерфейс / навигация ---
   setViewMode: (mode: ViewMode) => void;
   setAnchorDate: (iso: string) => void;
@@ -102,6 +109,7 @@ export const useAppStore = create<AppStore>()(
       categories: [],
       tasks: [],
       payments: [],
+      events: [],
       ui: initialUi,
 
       // --- категории ---
@@ -298,6 +306,29 @@ export const useAppStore = create<AppStore>()(
           return { payments: next };
         }),
 
+      // --- события ---
+      addEvent: (input) => {
+        const event: CalendarEvent = {
+          ...input,
+          id: createId(),
+          title: input.title.trim(),
+        };
+        set((state) => ({ events: [...state.events, event] }));
+        return event.id;
+      },
+
+      updateEvent: (id, patch) =>
+        set((state) => ({
+          events: state.events.map((e) =>
+            e.id === id
+              ? { ...e, ...patch, title: patch.title?.trim() ?? e.title }
+              : e,
+          ),
+        })),
+
+      deleteEvent: (id) =>
+        set((state) => ({ events: state.events.filter((e) => e.id !== id) })),
+
       // --- интерфейс / навигация ---
       setViewMode: (mode) =>
         set((state) => ({ ui: { ...state.ui, viewMode: mode } })),
@@ -311,7 +342,7 @@ export const useAppStore = create<AppStore>()(
       step: (dir) =>
         set((state) => {
           const { viewMode, anchorDate } = state.ui;
-          if (viewMode === 'payments') return {};
+          if (viewMode !== 'week' && viewMode !== 'month') return {};
           const nextAnchor =
             viewMode === 'week'
               ? addDays(anchorDate, 7 * dir)
@@ -330,6 +361,7 @@ export const useAppStore = create<AppStore>()(
           categories: next.categories,
           tasks: next.tasks,
           payments: next.payments,
+          events: next.events,
           ui: next.ui,
         }),
     }),
@@ -340,6 +372,7 @@ export const useAppStore = create<AppStore>()(
         categories: state.categories,
         tasks: state.tasks,
         payments: state.payments,
+        events: state.events,
         ui: state.ui,
       }),
     },

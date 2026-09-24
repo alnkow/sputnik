@@ -1,5 +1,5 @@
 import { useDraggable, useDroppable } from '@dnd-kit/core';
-import type { Payment, Task } from '@/shared/types';
+import type { CalendarEvent, Payment, Task } from '@/shared/types';
 import { cn } from '@/shared/lib/cn';
 import { dndId } from '@/shared/lib/dnd';
 import { dayNumber, isToday } from '@/shared/lib/date';
@@ -7,11 +7,13 @@ import { useUiStore } from '@/shared/store/useUiStore';
 import { TaskSquare } from '@/entities/task/ui/TaskSquare';
 import { isPaidInMonthOf } from '@/entities/payment/model/selectors';
 import { PaymentSquare } from '@/entities/payment/ui/PaymentSquare';
+import { EventSquare } from '@/entities/event/ui/EventSquare';
 
 interface MonthDayCellProps {
   iso: string;
   tasks: Task[];
   payments: Payment[];
+  events: CalendarEvent[];
   inMonth: boolean;
   colorOf: (task: Task) => string;
 }
@@ -49,9 +51,11 @@ export function MonthDayCell({
   iso,
   tasks,
   payments,
+  events,
   inMonth,
   colorOf,
 }: MonthDayCellProps) {
+  const setEventDialog = useUiStore((s) => s.setEventDialog);
   const openEditTask = useUiStore((s) => s.openEditTask);
   const openPaymentPreview = useUiStore((s) => s.openPaymentPreview);
   const { setNodeRef, isOver } = useDroppable({ id: dndId.day(iso) });
@@ -83,6 +87,15 @@ export function MonthDayCell({
         </span>
       </div>
       <div className="thin-scrollbar flex flex-wrap content-start gap-1 overflow-y-auto">
+        {events.map((event) => (
+          <EventSquare
+            key={event.id}
+            event={event}
+            onOpen={() =>
+              setEventDialog({ kind: 'view', id: event.id, readOnly: true })
+            }
+          />
+        ))}
         {payments.map((payment) => (
           <PaymentSquare
             key={payment.id}

@@ -1,6 +1,6 @@
 export type ID = string;
 
-export type ViewMode = 'week' | 'month' | 'payments';
+export type ViewMode = 'week' | 'month' | 'payments' | 'events';
 
 export interface Category {
   id: ID;
@@ -44,6 +44,21 @@ export interface Payment {
   paidAt: number | null;
 }
 
+/** Ежегодное событие, привязанное к месяцу (например, день рождения, отпуск). */
+export interface CalendarEvent {
+  id: ID;
+  title: string;
+  description: string | null;
+  /** месяц 1–12 */
+  month: number;
+  /** hex-цвет */
+  color: string;
+  /** эмодзи-иконка или null */
+  emoji: string | null;
+  /** число месяца (1–31) для показа в календаре; null — не показывать */
+  calendarDay: number | null;
+}
+
 export interface UiState {
   viewMode: ViewMode;
   /** 'YYYY-MM-DD' — определяет текущую отображаемую неделю/месяц */
@@ -58,5 +73,6 @@ export interface PersistedState {
   categories: Category[];
   tasks: Task[];
   payments: Payment[];
+  events: CalendarEvent[];
   ui: UiState;
 }

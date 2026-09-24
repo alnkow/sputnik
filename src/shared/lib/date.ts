@@ -10,7 +10,7 @@ export const MONTHS_NOMINATIVE = [
   'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
 ] as const;
 
-const MONTHS_GENITIVE = [
+export const MONTHS_GENITIVE = [
   'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
   'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
 ] as const;

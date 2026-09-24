@@ -14,13 +14,15 @@ import {
   ColumnsIcon,
   GridIcon,
   PlusIcon,
+  StarIcon,
 } from '@/shared/ui/icons';
-import { ExportImportButtons } from '@/features/export-import/ui/ExportImportButtons';
+import { SettingsMenu } from '@/features/export-import/ui/SettingsMenu';
 
 const modes: { value: ViewMode; label: string; icon: typeof GridIcon }[] = [
   { value: 'week', label: 'Неделя', icon: ColumnsIcon },
   { value: 'month', label: 'Месяц', icon: GridIcon },
   { value: 'payments', label: 'Платежи', icon: BanknoteIcon },
+  { value: 'events', label: 'События', icon: StarIcon },
 ];
 
 export function TopBar() {
@@ -33,8 +35,15 @@ export function TopBar() {
   const openCompleted = useUiStore((s) => s.openCompleted);
   const markPaymentCreated = useUiStore((s) => s.markPaymentCreated);
   const addPayment = useAppStore((s) => s.addPayment);
+  const setEventDialog = useUiStore((s) => s.setEventDialog);
 
-  const isCalendar = viewMode !== 'payments';
+  const isCalendar = viewMode === 'week' || viewMode === 'month';
+
+  const handleCreate = () => {
+    if (viewMode === 'payments') markPaymentCreated(addPayment());
+    else if (viewMode === 'events') setEventDialog({ kind: 'create' });
+    else openCreateTask(null);
+  };
   const periodLabel =
     viewMode === 'week'
       ? formatWeekRange(anchorDate)
@@ -100,11 +109,7 @@ export function TopBar() {
         <Button
           variant="primary"
           size="sm"
-          onClick={() =>
-            isCalendar
-              ? openCreateTask(null)
-              : markPaymentCreated(addPayment())
-          }
+          onClick={handleCreate}
         >
           <PlusIcon className="h-4 w-4" />
           Создать
@@ -113,7 +118,7 @@ export function TopBar() {
           <CheckCircleIcon className="h-4 w-4" />
           Выполненные
         </Button>
-        <ExportImportButtons />
+        <SettingsMenu />
       </div>
     </header>
   );

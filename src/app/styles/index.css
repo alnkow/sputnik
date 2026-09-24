@@ -49,3 +49,23 @@ body {
   background-color: rgb(203 213 225);
   border-radius: 9999px;
 }
+
+/* Печать отчёта (экспорт в PDF): A4, цвета как на экране. */
+@page {
+  size: A4;
+  margin: 16mm 14mm;
+}
+
+@media print {
+  html,
+  body,
+  #root {
+    height: auto;
+  }
+
+  body {
+    background: #fff;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

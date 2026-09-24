@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { useDroppable } from '@dnd-kit/core';
-import type { Payment, Task } from '@/shared/types';
+import type { CalendarEvent, Payment, Task } from '@/shared/types';
 import { useAppStore } from '@/shared/store/useAppStore';
 import { dndId } from '@/shared/lib/dnd';
 import {
@@ -16,6 +16,7 @@ import {
   isSameMonth,
 } from '@/shared/lib/date';
 import { paymentsOn } from '@/entities/payment/model/selectors';
+import { eventsOn } from '@/entities/event/model/selectors';
 import { WeekDayColumn } from './WeekDayColumn';
 import { MonthDayCell } from './MonthDayCell';
 
@@ -44,6 +45,7 @@ function CalendarGrid() {
   const categories = useAppStore((s) => s.categories);
   const tasks = useAppStore((s) => s.tasks);
   const payments = useAppStore((s) => s.payments);
+  const events = useAppStore((s) => s.events);
   const viewMode = useAppStore((s) => s.ui.viewMode);
   const anchorDate = useAppStore((s) => s.ui.anchorDate);
 
@@ -67,6 +69,7 @@ function CalendarGrid() {
 
   const tasksOn = (iso: string): Task[] => scheduled.get(iso) ?? [];
   const paymentsFor = (iso: string): Payment[] => paymentsOn(payments, iso);
+  const eventsFor = (iso: string): CalendarEvent[] => eventsOn(events, iso);
 
   if (viewMode === 'week') {
     const days = getWeekDays(anchorDate);
@@ -85,6 +88,7 @@ function CalendarGrid() {
             iso={iso}
             tasks={tasksOn(iso)}
             payments={paymentsFor(iso)}
+            events={eventsFor(iso)}
             colorOf={colorOf}
           />
         ))}
@@ -112,6 +116,7 @@ function CalendarGrid() {
             iso={iso}
             tasks={tasksOn(iso)}
             payments={paymentsFor(iso)}
+            events={eventsFor(iso)}
             inMonth={isSameMonth(iso, anchorDate)}
             colorOf={colorOf}
           />
