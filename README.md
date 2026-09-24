@@ -81,11 +81,11 @@ The `dist/` folder is a plain static website. You can put it on any static host 
 
 ### Deploy to GitHub Pages
 
-The repository includes a workflow (`.github/workflows/deploy.yml`) that tests, builds and publishes the app on every push to `master`.
+The repository includes a workflow (`.github/workflows/deploy.yml`) that tests, builds and publishes the app on every push to `main`.
 
 1. Push the repository to GitHub.
 2. Open **Settings → Pages** and set **Source** to **GitHub Actions**.
-3. Push to `master` or run the workflow manually from the **Actions** tab.
+3. Push to `main` or run the workflow manually from the **Actions** tab.
 
 The app will be available at `https://<your-username>.github.io/<repository-name>/`. Asset paths are relative (`base: './'` in `vite.config.ts`), so any repository name works.
 
