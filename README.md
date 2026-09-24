@@ -9,6 +9,8 @@ Sputnik is a small personal planner that runs entirely in your browser. It combi
 
 There is no server, no account and no sign-up. Your data lives in your browser, and you can export or import it as a file whenever you want.
 
+**▶ Try it: [alnkow.github.io/sputnik](https://alnkow.github.io/sputnik/)**. Nothing to install; your data stays in your browser.
+
 > The interface is in **Russian**. This README gives the Russian button names in quotes, e.g. «Создать» (Create), so you can find them.
 
 ---
@@ -62,7 +64,7 @@ To move data between browsers or computers, or to keep a safety copy, use **[Exp
 ### Run it
 
 ```bash
-git clone <repository-url> sputnik
+git clone https://github.com/alnkow/sputnik.git
 cd sputnik
 npm install
 npm run dev
